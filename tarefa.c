@@ -31,17 +31,17 @@ int deletar(Tarefa tarefas[], int *pos) {
   scanf("%d", &pos_d);
   pos_d--;
 
-  if(pos_d >= *pos)
+  if (pos_d >= *pos)
     return 2;
 
-  for(int i = pos_d; i< *pos; i++){
-    tarefas[i].prioridade = tarefas[i+1].prioridade;
-    strcpy(tarefas[i].categoria, tarefas[i+1].categoria);
-    strcpy(tarefas[i].descricao, tarefas[i+1].descricao);
+  for (int i = pos_d; i < *pos; i++) {
+    tarefas[i].prioridade = tarefas[i + 1].prioridade;
+    strcpy(tarefas[i].categoria, tarefas[i + 1].categoria);
+    strcpy(tarefas[i].descricao, tarefas[i + 1].descricao);
   }
 
   *pos = *pos - 1;
-  
+
   return 0;
 }
 int listar(Tarefa tarefas[], int pos) {
@@ -58,11 +58,41 @@ int listar(Tarefa tarefas[], int pos) {
   return 0;
 }
 int salvar(Tarefa tarefas[], int total, int pos) {
-  printf("Função salvar\n");
+  FILE *f = fopen("tarefas", "wb");
+  if (f == NULL)
+    return 1;
+
+  int e = fwrite(tarefas, total, sizeof(Tarefa), f);
+  if (e <= 0)
+    return 2;
+
+  e = fwrite(&pos, 1, sizeof(int), f);
+  if (e <= 0)
+    return 2;
+
+  e = fclose(f);
+  if (e != 0)
+    return 3;
+
   return 0;
 }
-int carregar(Tarefa tarefas[], int total, int pos) {
-  printf("Função carregar\n");
+int carregar(Tarefa tarefas[], int total, int *pos) {
+  FILE *f = fopen("tarefas", "rb");
+  if (f == NULL)
+    return 1;
+
+  int e = fread(tarefas, total, sizeof(Tarefa), f);
+  if (e <= 0)
+    return 2;
+
+  e = fread(pos, 1, sizeof(int), f);
+  if (e <= 0)
+    return 2;
+
+  e = fclose(f);
+  if (e != 0)
+    return 3;
+  
   return 0;
 }
 
